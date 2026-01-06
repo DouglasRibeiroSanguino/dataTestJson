@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "versao": "1.0",
+  "itens": [
+    { "id": 1, "nome": "Item A" },
+    { "id": 2, "nome": "Item B" },
+    { "id": 3, "nome": "Porca 1mm", "quantidade": 150 },
+    { "id": 4, "nome": "Parafuso 5mm", "quantidade": 75 },
+    { "id": 5, "nome": "Arruela 10mm", "quantidade": 200 }
+  ]
+}
