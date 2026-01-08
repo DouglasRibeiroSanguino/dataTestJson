@@ -139,6 +139,25 @@
       padding: 40px 0;
     }
 
+    .filter {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    
+    .filter.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .filter:hover {
+      opacity: 0.85;
+    }
+
     @media (max-width: 600px) {
       header {
         flex-direction: column;
@@ -158,6 +177,12 @@
     <header>
       <h1>Inventory</h1>
 
+      <div style="display:flex; gap:8px;">
+        <button class="filter active" data-status="all">All</button>
+        <button class="filter" data-status="active">Active</button>
+        <button class="filter" data-status="inactive">Inactive</button>
+      </div>
+      
       <div class="search">
         <span>🔍</span>
         <input id="search" placeholder="Search item..." />
@@ -168,57 +193,84 @@
   </div>
 
   <script>
-    let items = [];
+  let items = [];
+  let searchText = '';
+  let statusFilter = 'all';
 
-    fetch('https://douglasribeirosanguino.github.io/dataTestJsonAPI/dataTestJson.json')
-      .then(r => r.json())
-      .then(data => {
-        items = data.items;
-        render(items);
-      });
-
-    document.getElementById('search').addEventListener('input', e => {
-      const value = e.target.value.toLowerCase();
-      render(
-        items.filter(i => i.name.toLowerCase().includes(value))
-      );
+  fetch('https://douglasribeirosanguino.github.io/dataTestJsonAPI/dataTestJson.json')
+    .then(r => r.json())
+    .then(data => {
+      items = data.items;
+      applyFilters();
     });
 
-    function render(list) {
-      const grid = document.getElementById('grid');
-      grid.innerHTML = '';
+  document.getElementById('search').addEventListener('input', e => {
+    searchText = e.target.value.toLowerCase();
+    applyFilters();
+  });
 
-      if (list.length === 0) {
-        grid.innerHTML = '<div class="empty">No items found</div>';
-        return;
-      }
+  document.querySelectorAll('.filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      statusFilter = btn.dataset.status;
+      applyFilters();
+    });
+  });
 
-      list.forEach(i => {
-        const card = document.createElement('div');
-        card.className = 'card';
+  function applyFilters() {
+    let filtered = items.filter(i =>
+      i.name.toLowerCase().includes(searchText)
+    );
 
-        card.innerHTML = `
-          <div class="card-header">
-            <div class="name">${i.name}</div>
-            <div class="badge ${!i.active ? 'inactive' : ''}">
-              ${i.active ? 'Active' : 'Inactive'}
-            </div>
-          </div>
-
-          <div class="meta">
-            ${i.category} · ${i.specification ?? '—'}
-          </div>
-
-          <div class="footer">
-            <div>${i.supplier}</div>
-            <div class="quantity">${"Quantity: " + i.quantity} ${i.unit ?? "pcs"}</div>
-          </div>
-        `;
-
-        grid.appendChild(card);
-      });
+    if (statusFilter === 'active') {
+      filtered = filtered.filter(i => i.active === true);
     }
-  </script>
+
+    if (statusFilter === 'inactive') {
+      filtered = filtered.filter(i => i.active === false);
+    }
+
+    render(filtered);
+  }
+
+  function render(list) {
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+
+    if (list.length === 0) {
+      grid.innerHTML = '<div class="empty">No items found</div>';
+      return;
+    }
+
+    list.forEach(i => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="name">${i.name}</div>
+          <div class="badge ${!i.active ? 'inactive' : ''}">
+            ${i.active ? 'Active' : 'Inactive'}
+          </div>
+        </div>
+
+        <div class="meta">
+          ${i.category} · ${i.specification ?? '—'}
+        </div>
+
+        <div class="footer">
+          <div>${i.supplier}</div>
+          <div class="quantity">
+            Quantity: ${i.quantity} ${i.unit ?? 'pcs'}
+          </div>
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+  }
+</script>
 
 </body>
 </html>
