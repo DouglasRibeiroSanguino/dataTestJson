@@ -15,4 +15,5 @@ But you add texts for more simple read on terminal:
 
 "Status: ", $data.status, "Version: ", $data.version, $data.items
 
-<img width="615" height="300" alt="image" src="https://github.com/user-attachments/assets/4e1346fc-9662-4c3b-87fb-a9e3fecc6a77" />
+<img width="849" height="695" alt="image" src="https://github.com/user-attachments/assets/b78d9ff9-bf97-4e73-89d1-9c0eb89a94bf" />
+
