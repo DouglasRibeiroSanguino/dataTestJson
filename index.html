@@ -243,7 +243,7 @@
     }
   });
 
-  fetch('https://inventory-api.vercel.app/api/items')
+  fetch('https://inventory-api.vercel.app/api/dataItems')
     .then(r => r.json())
     .then(data => {
       items = data.items;
