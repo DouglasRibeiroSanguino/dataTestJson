@@ -1,32 +1,132 @@
-<input id="search" placeholder="Search item..." />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Items Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<ul id="list"></ul>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 40px;
+    }
 
-<script>
-let items = [];
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
 
-fetch('https://douglasribeirosanguino.github.io/dataTestJsonAPI/dataTestJson.json')
-  .then(r => r.json())
-  .then(data => {
-    items = data.items;
-    render(items);
-  });
+    h1 {
+      margin-top: 0;
+      font-size: 20px;
+    }
 
-document.getElementById('search').addEventListener('input', e => {
-  const value = e.target.value.toLowerCase();
-  const filtered = items.filter(i =>
-    i.name.toLowerCase().includes(value)
-  );
-  render(filtered);
-});
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      outline: none;
+    }
 
-function render(list) {
-  const ul = document.getElementById('list');
-  ul.innerHTML = '';
-  list.forEach(i => {
-    const li = document.createElement('li');
-    li.textContent = `${i.name} (${i.specification ?? ''})`;
-    ul.appendChild(li);
-  });
-}
-</script>
+    input:focus {
+      border-color: #1976d2;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    .name {
+      font-weight: 600;
+    }
+
+    .spec {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .empty {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Items</h1>
+
+    <input id="search" placeholder="Search item..." />
+
+    <ul id="list"></ul>
+  </div>
+
+  <script>
+    let items = [];
+
+    fetch('https://douglasribeirosanguino.github.io/dataTestJsonAPI/dataTestJson.json')
+      .then(r => r.json())
+      .then(data => {
+        items = data.items;
+        render(items);
+      });
+
+    document.getElementById('search').addEventListener('input', e => {
+      const value = e.target.value.toLowerCase();
+      const filtered = items.filter(i =>
+        i.name.toLowerCase().includes(value)
+      );
+      render(filtered);
+    });
+
+    function render(list) {
+      const ul = document.getElementById('list');
+      ul.innerHTML = '';
+
+      if (list.length === 0) {
+        ul.innerHTML = '<div class="empty">No items found</div>';
+        return;
+      }
+
+      list.forEach(i => {
+        const li = document.createElement('li');
+
+        li.innerHTML = `
+          <div>
+            <div class="name">${i.name}</div>
+            <div class="spec">${i.specification ?? ''}</div>
+          </div>
+          <div class="spec">${i.quantity ?? 0} pcs</div>
+        `;
+
+        ul.appendChild(li);
+      });
+    }
+  </script>
+
+</body>
+</html>
