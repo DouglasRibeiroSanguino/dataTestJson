@@ -139,6 +139,35 @@
       padding: 40px 0;
     }
 
+    .dropdown {
+      position: absolute;
+      top: 46px;
+      left: 0;
+      width: 100%;
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: none;
+      z-index: 10;
+    }
+    
+    .dropdown-title {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    
+    .dropdown .filter {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 6px;
+    }
+    
+    .dropdown .filter:last-child {
+      margin-bottom: 0;
+    }
+
     .filter {
       padding: 8px 14px;
       border-radius: 999px;
@@ -178,14 +207,18 @@
       <h1>Inventory</h1>
       
       <div class="search">
-        <span>🔍</span>
-        <input id="search" placeholder="Search item..." />
-        
+      <span>🔍</span>
+      <input id="search" placeholder="Search item..." autocomplete="off" />
+    
+      <div id="filterDropdown" class="dropdown">
+        <div class="dropdown-title">Status</div>
+    
         <button class="filter active" data-status="all">All</button>
         <button class="filter" data-status="active">Active</button>
         <button class="filter" data-status="inactive">Inactive</button>
-        
       </div>
+    </div>
+
     </header>
 
     <div id="grid" class="grid"></div>
