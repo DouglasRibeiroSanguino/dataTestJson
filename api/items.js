@@ -1,4 +1,4 @@
-import data from '../data/dataItems.json';
+const data = require('../data/dataItems.json');
 
 export default function handler(req, res) {
   const { search, active } = req.query;
