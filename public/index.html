@@ -346,56 +346,53 @@
         card.className = 'card';
 
         card.innerHTML = `
-        <div class="card-header">
-          <div class="name">${i.name}</div>
-          <div class="badge ${!i.active ? 'inactive' : ''}">
-            ${i.active ? 'Active' : 'Inactive'}
-          </div>
+      <div class="card-header">
+        <div class="name">${i.name}</div>
+        <div class="badge ${!i.active ? 'inactive' : ''}">
+          ${i.active ? 'Active' : 'Inactive'}
         </div>
+      </div>
 
-        <div class="meta">
-          ${i.category} · ${i.specification ?? '—'}
-        </div>
+      <div class="meta">
+        ${i.category} · ${i.specification ?? '—'}
+      </div>
 
-        <div class="footer">
-          <div>${i.supplier}</div>
-          <div class="quantity">
-            Quantity: ${i.quantity} ${i.unit ?? 'pcs'}
-          </div>
+      <div class="footer">
+        <div>${i.supplier}</div>
+        <div class="quantity">
+          Quantity: ${i.quantity} ${i.unit ?? 'pcs'}
         </div>
-      `;
+      </div>
+    `;
+
+        card.addEventListener('click', () => openModal(i));
 
         grid.appendChild(card);
       });
-
-      const card = document.createElement('div');
-      card.className = 'card';
-
-      card.addEventListener('click', () => openModal(i));
-
-      const modal = document.getElementById('itemModal');
-
-      function openModal(item) {
-        document.getElementById('modalName').textContent = item.name;
-        document.getElementById('modalCategory').textContent = item.category;
-        document.getElementById('modalSpec').textContent = item.specification ?? '—';
-        document.getElementById('modalSupplier').textContent = item.supplier;
-        document.getElementById('modalStatus').textContent = item.active ? 'Active' : 'Inactive';
-        document.getElementById('modalQty').textContent =
-          `${item.quantity} ${item.unit ?? 'pcs'}`;
-
-        modal.classList.add('open');
-      }
-
-      function closeModal() {
-        modal.classList.remove('open');
-      }
-
-      modal.addEventListener('click', e => {
-        if (e.target === modal) closeModal();
-      });
-
     }
+
+    const modal = document.getElementById('itemModal');
+
+    function openModal(item) {
+      document.getElementById('modalName').textContent = item.name;
+      document.getElementById('modalCategory').textContent = item.category;
+      document.getElementById('modalSpec').textContent = item.specification ?? '—';
+      document.getElementById('modalSupplier').textContent = item.supplier;
+      document.getElementById('modalStatus').textContent = item.active ? 'Active' : 'Inactive';
+      document.getElementById('modalQty').textContent =
+        `${item.quantity} ${item.unit ?? 'pcs'}`;
+
+      modal.classList.add('open');
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+    }
+
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closeModal();
+    });
+
   </script>
 
   <div id="itemModal" class="modal">
