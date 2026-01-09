@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Inventory Viewer</title>
@@ -152,19 +153,19 @@
       display: none;
       z-index: 10;
     }
-    
+
     .dropdown-title {
       font-size: 12px;
       color: var(--muted);
       margin-bottom: 8px;
     }
-    
+
     .dropdown .filter {
       width: 100%;
       text-align: left;
       margin-bottom: 6px;
     }
-    
+
     .dropdown .filter:last-child {
       margin-bottom: 0;
     }
@@ -178,12 +179,12 @@
       font-size: 13px;
       cursor: pointer;
     }
-    
+
     .filter.active {
       background: var(--primary);
       border-color: var(--primary);
     }
-    
+
     .filter:hover {
       opacity: 0.85;
     }
@@ -199,26 +200,77 @@
         width: 100%;
       }
     }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+    }
+
+    .modal-card h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .modal-row {
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: var(--muted);
+    }
+
+    .modal-row strong {
+      color: var(--text);
+    }
+
+    .modal-close {
+      margin-top: 16px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+    }
   </style>
 </head>
+
 <body>
 
   <div class="container">
     <header>
       <h1>Inventory</h1>
-      
+
       <div class="search">
-      <span>🔍</span>
-      <input id="search" placeholder="Search item..." autocomplete="off" />
-    
-      <div id="filterDropdown" class="dropdown">
-        <div class="dropdown-title">Status</div>
-    
-        <button class="filter active" data-status="all">All</button>
-        <button class="filter" data-status="active">Active</button>
-        <button class="filter" data-status="inactive">Inactive</button>
+        <span>🔍</span>
+        <input id="search" placeholder="Search item..." autocomplete="off" />
+
+        <div id="filterDropdown" class="dropdown">
+          <div class="dropdown-title">Status</div>
+
+          <button class="filter active" data-status="all">All</button>
+          <button class="filter" data-status="active">Active</button>
+          <button class="filter" data-status="inactive">Inactive</button>
+        </div>
       </div>
-    </div>
 
     </header>
 
@@ -226,74 +278,74 @@
   </div>
 
   <script>
-  let items = [];
-  let searchText = '';
-  let statusFilter = 'all';
+    let items = [];
+    let searchText = '';
+    let statusFilter = 'all';
 
-  const searchInput = document.getElementById('search');
-  const dropdown = document.getElementById('filterDropdown');
+    const searchInput = document.getElementById('search');
+    const dropdown = document.getElementById('filterDropdown');
 
-  searchInput.addEventListener('focus', () => {
-    dropdown.style.display = 'block';
-  });
+    searchInput.addEventListener('focus', () => {
+      dropdown.style.display = 'block';
+    });
 
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.search')) {
-      dropdown.style.display = 'none';
-    }
-  });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.search')) {
+        dropdown.style.display = 'none';
+      }
+    });
 
-  fetch('/api/items')
-    .then(r => r.json())
-    .then(data => {
-      items = data.items;
+    fetch('/api/items')
+      .then(r => r.json())
+      .then(data => {
+        items = data.items;
+        applyFilters();
+      });
+
+    document.getElementById('search').addEventListener('input', e => {
+      searchText = e.target.value.toLowerCase();
       applyFilters();
     });
 
-  document.getElementById('search').addEventListener('input', e => {
-    searchText = e.target.value.toLowerCase();
-    applyFilters();
-  });
-
-  document.querySelectorAll('.filter').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      statusFilter = btn.dataset.status;
-      applyFilters();
+    document.querySelectorAll('.filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        statusFilter = btn.dataset.status;
+        applyFilters();
+      });
     });
-  });
 
-  function applyFilters() {
-    let filtered = items.filter(i =>
-      i.name.toLowerCase().includes(searchText)
-    );
+    function applyFilters() {
+      let filtered = items.filter(i =>
+        i.name.toLowerCase().includes(searchText)
+      );
 
-    if (statusFilter === 'active') {
-      filtered = filtered.filter(i => i.active === true);
+      if (statusFilter === 'active') {
+        filtered = filtered.filter(i => i.active === true);
+      }
+
+      if (statusFilter === 'inactive') {
+        filtered = filtered.filter(i => i.active === false);
+      }
+
+      render(filtered);
     }
 
-    if (statusFilter === 'inactive') {
-      filtered = filtered.filter(i => i.active === false);
-    }
+    function render(list) {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
 
-    render(filtered);
-  }
+      if (list.length === 0) {
+        grid.innerHTML = '<div class="empty">No items found</div>';
+        return;
+      }
 
-  function render(list) {
-    const grid = document.getElementById('grid');
-    grid.innerHTML = '';
+      list.forEach(i => {
+        const card = document.createElement('div');
+        card.className = 'card';
 
-    if (list.length === 0) {
-      grid.innerHTML = '<div class="empty">No items found</div>';
-      return;
-    }
-
-    list.forEach(i => {
-      const card = document.createElement('div');
-      card.className = 'card';
-
-      card.innerHTML = `
+        card.innerHTML = `
         <div class="card-header">
           <div class="name">${i.name}</div>
           <div class="badge ${!i.active ? 'inactive' : ''}">
@@ -313,10 +365,53 @@
         </div>
       `;
 
-      grid.appendChild(card);
-    });
-  }
-</script>
+        grid.appendChild(card);
+      });
+
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      card.addEventListener('click', () => openModal(i));
+
+      const modal = document.getElementById('itemModal');
+
+      function openModal(item) {
+        document.getElementById('modalName').textContent = item.name;
+        document.getElementById('modalCategory').textContent = item.category;
+        document.getElementById('modalSpec').textContent = item.specification ?? '—';
+        document.getElementById('modalSupplier').textContent = item.supplier;
+        document.getElementById('modalStatus').textContent = item.active ? 'Active' : 'Inactive';
+        document.getElementById('modalQty').textContent =
+          `${item.quantity} ${item.unit ?? 'pcs'}`;
+
+        modal.classList.add('open');
+      }
+
+      function closeModal() {
+        modal.classList.remove('open');
+      }
+
+      modal.addEventListener('click', e => {
+        if (e.target === modal) closeModal();
+      });
+
+    }
+  </script>
+
+  <div id="itemModal" class="modal">
+    <div class="modal-card">
+      <h2 id="modalName"></h2>
+
+      <div class="modal-row"><strong>Category:</strong> <span id="modalCategory"></span></div>
+      <div class="modal-row"><strong>Specification:</strong> <span id="modalSpec"></span></div>
+      <div class="modal-row"><strong>Supplier:</strong> <span id="modalSupplier"></span></div>
+      <div class="modal-row"><strong>Status:</strong> <span id="modalStatus"></span></div>
+      <div class="modal-row"><strong>Quantity:</strong> <span id="modalQty"></span></div>
+
+      <button class="modal-close" onclick="closeModal()">Close</button>
+    </div>
+  </div>
 
 </body>
+
 </html>
